@@ -1,0 +1,48 @@
+{
+	"bullet1": {
+		"src": "bullet.png",
+		"frame": {
+			"x": 55,
+			"y": 46,
+			"w": 107,
+			"h": 36
+		}
+
+	},
+	"bullet2": {
+		"src": "bullet.png",
+		"frame": {
+			"x": 242,
+			"y": 46,
+			"w": 105,
+			"h": 36
+		}
+	},
+	"bullet3": {
+		"src": "bullet.png",
+		"frame": {
+			"x": 5,
+			"y": 155,
+			"w": 98,
+			"h": 53
+		}
+	},
+	"bullet4": {
+		"src": "bullet.png",
+		"frame": {
+			"x": 167,
+			"y": 126,
+			"w": 65,
+			"h": 90
+		}
+	},
+	"bullet5": {
+		"src": "bullet.png",
+		"frame": {
+			"x": 305,
+			"y": 151,
+			"w": 79,
+			"h": 61
+		}
+	}
+}

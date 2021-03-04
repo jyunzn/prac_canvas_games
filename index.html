@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8'>
+	<style>
+		body {
+			background: black;
+			text-align: center;
+		}
+		#oC {
+			background: skyblue;
+		}
+	</style>
+	<script src='js/jquery.js'></script>
+	<script src='js/resource.js'></script>
+	<script src='js/common.js'></script>
+	<script src='js/Spirit.js'></script>
+	<script src='js/People.js'></script>
+	<script src='js/Bullet.js'></script>
+	<script src='js/Button.js'></script>
+	<script>
+		
+
+		window.onload = async function () {
+			let oC = document.querySelector(`#oC`);
+			let W = oC.width,
+				H = oC.height;
+			let gd = oC.getContext(`2d`);
+			try {
+				let imgs = await loadResources();
+				console.log(imgs);
+
+
+				// 基座顏色
+				gd.fillStyle = 'blue';
+
+				
+				// 計分
+				let point = 0;
+				gd.font = '30px Skia';
+				
+
+				// 砲台
+				let data_canon = imgs.other.canon;
+				let canon = new Spirit({
+					img: data_canon.img,
+					sx: data_canon.frame.x,
+					sy: data_canon.frame.y,
+					w: data_canon.frame.w,
+					h: data_canon.frame.h,
+					dw: data_canon.frame.w/2,
+					dh: data_canon.frame.h/2,
+					x: 400,
+					y: 500,
+					rotation: -65,
+				})
+
+				
+				oC.onmousemove = function (ev) {
+					let a = ev.offsetX - canon.x;
+					let b = ev.offsetY - canon.y;
+					canon.rotation = Math.atan2(b,a) * 180 / Math.PI + 30;
+				}
+
+
+				// 子彈
+				let bullets = [];
+				let bulletType = 1;
+				let last_fire = 0;
+				oC.onclick = function (ev) {
+					let now = Date.now();
+					if (now - last_fire < 300) {
+						return;
+					}
+					last_fire = now;
+
+					let bullet = new Bullet(imgs, bulletType);
+					bullet.x = canon.x;
+					bullet.y = canon.y;
+					bullet.dw = bullet.w/2;   
+					bullet.dh = bullet.h/2;
+					bullet.rotation = canon.rotation + 65;
+					bullets.push(bullet);
+				}
+				
+
+				
+				// 按鈕
+				let btnMinus = new Button(imgs.other.buttonLeft, imgs.other.buttonLeftDown);
+				let btnPlus = new Button(imgs.other.buttonRight, imgs.other.buttonRightDown);
+
+				btnMinus.x = canon.x - 50;
+				btnMinus.y = canon.y + 60;
+				btnPlus.x = canon.x + 50;
+				btnPlus.y = canon.y + 60;
+
+				oC.onmousedown = function (ev) {
+					let minus = false;
+					let plus = false;
+
+					if (btnMinus.checkDown(ev.offsetX, ev.offsetY)) {
+						minus = true;
+					}
+					if (btnPlus.checkDown(ev.offsetX, ev.offsetY)) {
+						plus = true;
+					}
+
+
+					if (minus && bulletType > 1) {
+						bulletType--;
+					}
+					if (plus && bulletType < 5) {
+						bulletType++
+					}
+
+				}
+
+				oC.onmouseup = function (ev) {
+					btnMinus.checkUp(ev.offsetX, ev.offsetY)
+					btnPlus.checkUp(ev.offsetX, ev.offsetY)
+				}
+				
+
+				
+				// 目標人物
+				let peoples = [];
+				setInterval(function () { 
+
+					if (Math.random() < 1) { 
+						let people = new People(imgs, rdnInt(1,9));
+						
+						if (Math.random()<0.5)
+						{
+							people.x = - 100;
+							people.y = rdnInt(0, H);
+							people.rotation = rdn(70, 110);
+						} 
+
+						else 
+						{
+							people.x = W + 100;
+							people.y = rdnInt(0, H);
+							people.rotation = rdn(-70, -110);
+							people.scaleY = -1; 
+						}
+						peoples.push(people);
+					}
+				}, 50)
+				
+
+
+				
+				
+				function next() {
+					gd.clearRect(0, 0, oC.width, oC.height);
+
+					
+					bullets.forEach(bullet=>bullet.move());
+					
+					
+					peoples.forEach(people=>people.move());
+					peoples.forEach(people=>people.nextFrame());
+					
+					bullets = bullets.filter(bullet=>!bullet.outOfCanvas(W, H));
+					peoples = peoples.filter(bullet=>!bullet.outOfCanvas(W, H));
+					// console.log(bullets.length, peoples.length);
+					
+					peoples.forEach((people, p_index)=>{
+						bullets.forEach((bullet, b_index)=>{
+							if (people.collTest(bullet)) {
+								peoples.splice(p_index, 1);
+								// bullets.splice(b_index, 1);
+								point++;
+							}
+						})
+					})
+					
+
+					gd.fillRect(0, 500, 800, 100);
+					gd.fillText(point, 100, 100);
+					canon.draw(gd);
+					bullets.forEach(bullet=>bullet.draw(gd));
+					
+			
+					btnMinus.draw(gd);  
+					btnPlus.draw(gd);  
+					
+					peoples.forEach(people=>people.draw(gd));
+					
+
+					requestAnimationFrame(next);
+				}
+				requestAnimationFrame(next);
+				
+
+
+
+			} catch(e) {
+				console.log(e);
+			}
+			
+		}
+		
+
+
+
+	</script>
+</head>
+<body>
+	<canvas width="800px" height="600px" id="oC"></canvas>
+</body>
+</html>

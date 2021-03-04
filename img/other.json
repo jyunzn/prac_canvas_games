@@ -1,0 +1,47 @@
+{
+	"canon": {
+		"src": "canon.jpg",
+		"frame": {
+			"x": 0,
+			"y": 60,
+			"w": 260,
+			"h": 200
+		}
+	},
+	"buttonLeft": {
+		"src": "button.png",
+		"frame": {
+			"x": 262,
+			"y": 17,
+			"w": 48,
+			"h": 48
+		}
+	},
+	"buttonLeftDown": {
+		"src": "button.png",
+		"frame": {
+			"x": 262,
+			"y": 85,
+			"w": 48,
+			"h": 48
+		}
+	},
+	"buttonRight": {
+		"src": "button.png",
+		"frame": {
+			"x": 103,
+			"y": 160,
+			"w": 48,
+			"h": 48
+		}
+	},
+	"buttonRightDown": {
+		"src": "button.png",
+		"frame": {
+			"x": 28,
+			"y": 84,
+			"w": 48,
+			"h": 48
+		}
+	},
+}
